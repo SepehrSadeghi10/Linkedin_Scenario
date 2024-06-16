@@ -98,10 +98,12 @@ vrf definition VRF-B
 exit
 !
 router ospf 1 vrf VRF-A
+ capability vrf-lite
  router-id 3.3.3.1
 exit
 !
 router ospf 2 vrf VRF-B
+ capability vrf-lite
  router-id 3.3.3.2
 exit
 !
