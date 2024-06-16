@@ -1,1 +1,123 @@
+R1===================================
+conf t
+!
+hostname R1
+!
+router ospf 1
+ router-id 1.1.1.1
+exit
+!
+int fa0/0
+ ip address 192.168.12.1 255.255.255.0
+ ip ospf 1 area 0
+ no shut
+!
+int fa1/0
+ ip address 192.168.21.1 255.255.255.0
+ ip ospf 1 area 0
+ no shut
+!
+int loopback 1
+ ip add 172.16.0.1 255.255.255.0
+ ip add 172.17.0.1 255.255.255.0 secondary
+ ip add 172.18.0.1 255.255.255.0 secondary
+ ip ospf 1 area 0
+ ip ospf net point-to-point
+exit
+!
+end
+!
+write
+!
 
+R2===================================
+conf t
+!
+hostname R2
+!
+vrf definition VRF-A
+ address-family ipv4
+ exit
+exit
+!
+vrf definition VRF-B
+ address-family ipv4
+ exit
+exit
+!
+router ospf 1 vrf VRF-A
+ router-id 2.2.2.1
+exit
+!
+router ospf 2 vrf VRF-B
+ router-id 2.2.2.2
+exit
+!
+int fa0/0
+ vrf forwarding VRF-A
+ ip address 192.168.12.2 255.255.255.0
+ ip ospf 1 area 0
+ no shut
+!
+int fa1/0
+ vrf forwarding VRF-B
+ ip address 192.168.21.2 255.255.255.0
+ ip ospf 1 area 0
+ no shut
+!
+int fa2/0
+ vrf forwarding VRF-A
+ ip address 192.168.23.2 255.255.255.0
+ ip ospf 1 area 1
+ no shut
+!
+int fa3/0
+ vrf forwarding VRF-B
+ ip address 192.168.32.2 255.255.255.0
+ ip ospf 2 area 2
+ no shut
+!
+end
+!
+write
+!
+
+R3===================================
+conf t
+!
+hostname R3
+!
+vrf definition VRF-A
+ address-family ipv4
+ exit
+exit
+!
+vrf definition VRF-B
+ address-family ipv4
+ exit
+exit
+!
+router ospf 1 vrf VRF-A
+ router-id 3.3.3.1
+exit
+!
+router ospf 2 vrf VRF-B
+ router-id 3.3.3.2
+exit
+!
+int fa2/0
+ vrf forwarding VRF-A
+ ip address 192.168.23.3 255.255.255.0
+ ip ospf 1 area 1
+ no shut
+!
+int fa3/0
+ vrf forwarding VRF-B
+ ip address 192.168.32.3 255.255.255.0
+ ip ospf 2 area 2
+ no shut
+!
+end
+!
+write
+!
